@@ -56,6 +56,7 @@ pic_rekberboy = os.environ.get("PIC_REKBERBOY", "https://telegra.ph/file/78acf32
 
 # =========================================================== #
 
+pesan_larang = os.environ.get("PESAN_LARANG", "kontol")
 pesan_join = os.environ.get("PESAN_JOIN", "Tidak dapat diakses harap join terlebih dahulu")
 start_msg = os.environ.get("START_MSG", """"
 {mention},Silahkan gunakan hastag:
