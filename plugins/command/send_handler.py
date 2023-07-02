@@ -4,12 +4,15 @@ import re
 from pyrogram import Client, types, enums
 from plugins import Database, Helper
 
-
 async def send_with_pic_handler(client: Client, msg: types.Message, key: str, hastag: list):
     db = Database(msg.from_user.id)
     helper = Helper(client, msg)
     user = db.get_data_pelanggan()
     if msg.text or msg.photo or msg.video or msg.voice:
+        caption = msg.text or msg.caption
+        if any(pesan in caption.lower() for pesan in config.pesan_larang):
+            return await msg.reply('Tidak diperbolehkan mengirim pesan dengan kata tersebut.', quote=True)
+        
         menfess = user.menfess
         all_menfess = user.all_menfess
         coin = user.coin
@@ -26,7 +29,7 @@ async def send_with_pic_handler(client: Client, msg: types.Message, key: str, ha
             picture = config.pic_girl
         elif key == hastag[1]:
             picture = config.pic_boy
-
+            
         if user.status == 'talent':
             picture = config.pic_talentgirl
         if user.status == 'owner':
@@ -39,14 +42,9 @@ async def send_with_pic_handler(client: Client, msg: types.Message, key: str, ha
             pictur = config.pic_bfrent
         elif user.status == 'moans boy':
             picture = config.pic_moansboy
-
+            
         link = await get_link()
-        caption = msg.text or msg.caption
         entities = msg.entities or msg.caption_entities
-
-        for larangan in config.pesan_larang:
-            if larangan in caption:
-                return await msg.reply('Pesan mengandung kata yang dilarang.', quote=True)
 
         kirim = await client.send_photo(config.channel_1, picture, caption, caption_entities=entities)
         await helper.send_to_channel_log(type="log_channel", link=link + str(kirim.id))
@@ -54,7 +52,6 @@ async def send_with_pic_handler(client: Client, msg: types.Message, key: str, ha
         await msg.reply(f"pesan telah berhasil terkirim. hari ini kamu telah mengirim menfess sebanyak {menfess + 1}/{config.batas_kirim} . kamu dapat mengirim menfess sebanyak {config.batas_kirim} kali dalam sehari\n\nwaktu reset setiap jam 1 pagi\n<a href='{link + str(kirim.id)}'>check pesan kamu</a>. \n\n\n\n Info: Topup Coin Hanya ke @OwnNeko")
     else:
         await msg.reply('media yang didukung photo, video dan voice')
-
 
 async def send_menfess_handler(client: Client, msg: types.Message):
     helper = Helper(client, msg)
@@ -92,11 +89,9 @@ async def send_menfess_handler(client: Client, msg: types.Message):
     else:
         await msg.reply('media yang didukung photo, video dan voice')
 
-
 async def get_link():
     anu = str(config.channel_1).split('-100')[1]
     return f"https://t.me/c/{anu}/"
-
 
 async def transfer_coin_handler(client: Client, msg: types.Message):
     if re.search(r"^[\/]tf_coin(\s|\n)*$", msg.text or msg.caption):
@@ -186,7 +181,6 @@ async def transfer_coin_handler(client: Client, msg: types.Message):
         await msg.reply(f"pesan telah berhasil terkirim. hari ini kamu telah mengirim menfess sebanyak {menfess + 1}/{config.batas_kirim} . kamu dapat mengirim menfess sebanyak {config.batas_kirim} kali dalam sehari\n\nwaktu reset setiap jam 1 pagi\n<a href='{link + str(kirim.id)}'>check pesan kamu</a>")
     else:
         await msg.reply('media yang didukung photo, video dan voice')
-
 
 async def get_link():
     anu = str(config.channel_1).split('-100')[1]
